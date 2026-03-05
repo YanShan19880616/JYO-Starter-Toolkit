@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#7f1d1d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>武林助手</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          screens: {
+            'xs': '375px',
+            'sm': '640px',
+            'md': '768px',
+            'lg': '1024px',
+            'xl': '1280px',
+          },
+          spacing: {
+            'safe-top': 'env(safe-area-inset-top)',
+            'safe-bottom': 'env(safe-area-inset-bottom)',
+            'safe-left': 'env(safe-area-inset-left)',
+            'safe-right': 'env(safe-area-inset-right)',
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* 响应式字体大小 */
+    html { font-size: 16px; }
+    @media (min-width: 768px) { html { font-size: 18px; } }
+    @media (min-width: 1024px) { html { font-size: 20px; } }
+    
+    /* 安全区域适配 */
+    .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0.5rem); }
+    .pt-safe { padding-top: env(safe-area-inset-top); }
+    
+    /* 平滑滚动 */
+    * { -webkit-overflow-scrolling: touch; }
+    
+    /* 触摸反馈 */
+    .touch-active:active { transform: scale(0.98); opacity: 0.9; }
+    
+    /* 图片加载优化 */
+    img { content-visibility: auto; }
+    
+    /* 防止文本选择 */
+    .no-select { -webkit-user-select: none; user-select: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // --- 原生 SVG 图标组件 (绝对安全，不依赖外部库) ---
+    const AlertIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
+    const InfoIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>;
+    const SwordIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"></polyline><line x1="13" y1="19" x2="19" y2="13"></line><line x1="16" y1="16" x2="20" y2="20"></line><line x1="19" y1="21" x2="21" y2="19"></line><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"></polyline><line x1="5" y1="14" x2="9" y2="18"></line><line x1="7" y1="17" x2="4" y2="20"></line><line x1="3" y1="19" x2="5" y2="21"></line></svg>;
+    const UserIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
+    const BookIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>;
+    const ZapIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
+    const ShieldIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>;
+    const BookOpenIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>;
+    const FileTextIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>;
+    const HeartIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>;
+    const LockIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
+    const CheckIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"></polyline></svg>;
+    const ChevronDownIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="6 9 12 15 18 9"></polyline></svg>;
+    const ChevronUpIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="18 15 12 9 6 15"></polyline></svg>;
+    const ChevronLeftIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 18 9 12 15 6"></polyline></svg>;
+    const StarIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>;
+    const ManualIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M8 2v20"></path><line x1="4" y1="6" x2="8" y2="6"></line><line x1="4" y1="12" x2="8" y2="12"></line><line x1="4" y1="18" x2="8" y2="18"></line><path d="M11 8h5"></path><path d="M11 12h5"></path><path d="M11 16h3"></path></svg>;
+    const ChevronRightIcon = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="9 18 15 12 9 6"></polyline></svg>;
+
+    // --- 解析自 Excel 的人物属性数据 ---
+    const ATTRIBUTES_DATA = {
+      panel4: [
+        { name: "臂力", desc: "负重多，伤害高。学武功/触发事件前置要求。" },
+        { name: "定力", desc: "影响状态恢复。定力越高时恢复状态的时间越快。" },
+        { name: "悟性", desc: "影响消耗学点。数值越高，消点所需学点越少。" },
+        { name: "根骨", desc: "影响气血成长。拜师及绝学常见前置条件。" },
+        { name: "福缘", desc: "影响奇遇触发。绝学及特殊任务核心要求。" },
+        { name: "机敏", desc: "影响攻击速度与闪避概率。" }
+      ],
+      panel3: [
+        { name: "名声", desc: "越高在游戏中可发生的事件越多。例如担任帮主须一定名声，保镖与驿站送信皆能提升名声值。", req: "学武功/触发事件前置要求\n游侠打点同时运镖就行" },
+        { name: "江湖历练", desc: "该角色在游戏中所经历事件的参考值。", req: "学武功/触发事件前置要求\n游侠打点同时运镖就行" }
+      ],
+      panel1Core: [
+        { 
+          name: "基本内功", 
+          effect: ["1. 每增加10级，游戏角色增加1点根骨", "2. 决定内力上限(每一级增加5点内力和8点气血)", "3. 学习绝学、绝内时常见的属性条件之一"], 
+          limit: ["139.99级 (吃神佑丹，消65200学点) - 141", "自修 141 - 150", "消点NPC：白自在"] 
+        },
+        { 
+          name: "搏击格斗", 
+          effect: ["1. 每增加10级，游戏角色增加1点臂力", "2. 等级越高拳类武学攻击力越高", "3. 等级*1.5 = 拳类武学自修等级上限", "4. 消满则拳类武学可自修到250级"], 
+          limit: ["140级上限", "消点NPC：白自在"] 
+        },
+        { 
+          name: "闪躲纵跃", 
+          effect: ["1. 每增加10级，游戏角色增加1点机敏", "2. 增加战斗中闪避攻击概率"], 
+          limit: ["140级上限", "消点NPC：白自在"] 
+        }
+      ],
+      panel1Weapon: [
+        { name: "基本剑法", effect: ["1. 增加剑类武学攻击力", "2. 等级*1.5 = 剑类武学自修等级上限", "3. 消满则剑类武学可自修到250级"] },
+        { name: "基本刀法", effect: ["1. 增加刀类武学攻击力", "2. 等级*1.5 = 刀类武学自修等级上限", "3. 消满则刀类武学可自修到250级"] },
+        { name: "基本鞭法", effect: ["1. 增加鞭类武学攻击力", "2. 等级*1.5 = 鞭类武学自修等级上限", "3. 消满则鞭类武学可自修到250级"] },
+        { name: "基本棍法", effect: ["1. 增加棍类武学攻击力", "2. 等级*1.5 = 棍类武学自修等级上限", "3. 消满则棍类武学可自修到250级"] },
+        { name: "基本枪法", effect: ["1. 增加枪类武学攻击力", "2. 等级*1.5 = 枪类武学自修等级上限", "3. 消满则枪类冲学可自修到250级"] },
+        { name: "基本刺术", effect: ["增加发动点穴攻击时的伤害和命中率"] },
+        { name: "基本阵法", effect: ["增加发动阵法时的威力（需结合具体阵法书籍）"] } 
+      ]
+    };
+
+    // --- 悟性30-90冲刺数据 ---
+    const WUXING_STEPS = [
+      { id: 1, name: "初始人物ROLL属性", add: 25, total: 25, note: "" },
+      { id: 2, name: "初始人物5点自由点", add: 5, total: 30, note: "" },
+      { id: 3, name: "读书识字100级", add: 10, total: 40, note: "" },
+      { id: 4, name: "商城：悟性丹", add: 5, total: 45, note: "一生只能吃5颗，二转前可吃" },
+      { id: 5, name: "商城：悟性仙丹", add: 10, total: 55, note: "一生只能吃10颗，二转前可吃" },
+      { id: 6, name: "商城：许愿红蛋", add: 3, total: 58, note: "过生日指定属性，一生3颗，二转前可吃" },
+      { id: 7, name: "天勤帽", add: 2, total: 60, note: "" },
+      { id: 8, name: "天勤护手", add: 2, total: 62, note: "" },
+      { id: 9, name: "天勤袍", add: 3, total: 65, note: "" },
+      { id: 10, name: "天勤靴", add: 3, total: 68, note: "" },
+      { id: 11, name: "神悟武器", add: 3, total: 71, note: "" },
+      { id: 12, name: "破军披风", add: 7, total: 78, note: "" },
+      { id: 13, name: "升级版玄武项链", add: 9, total: 90, note: "找人借用即可 (+5基础悟性 +4附加悟性)", isTarget: true },
+      { id: 14, name: "任意属性丹", add: 10, total: 100, note: "指定悟性+1，一生只能使用10颗", isSkip: true }
+    ];
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('character');
+
+      return (
+        <div className="flex justify-center bg-gray-900 min-h-screen font-sans">
+          {/* 主容器：移动端全宽，桌面端限制最大宽度并居中 */}
+          <div className="w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl bg-[#f7f2e8] min-h-screen relative flex flex-col shadow-2xl overflow-hidden text-gray-800">
+            
+            {/* 顶部导航栏 - 添加安全区域适配 */}
+            <div className="bg-red-900 text-[#f7f2e8] py-3 md:py-4 px-4 text-center shadow-[0_2px_4px_rgba(0,0,0,0.3)] z-10 sticky top-0 flex justify-between items-center border-b border-amber-600/30 pt-safe">
+              <div className="w-6"></div>
+              <h1 className="text-lg md:text-xl font-bold tracking-widest font-serif">
+                {activeTab === 'character' && "人物主页"}
+                {activeTab === 'skills' && "武功秘籍"}
+                {activeTab === 'weapons' && "神兵利器"}
+                {activeTab === 'cheats' && "外挂辅助"}
+              </h1>
+              <div className="w-6"><InfoIcon size={20} className="opacity-80" /></div>
+            </div>
+
+            {/* 主要内容区域 - 底部留出导航栏空间 */}
+            <div className="flex-1 overflow-y-auto pb-16 md:pb-20">
+              {activeTab === 'character' && <CharacterTab />}
+              {activeTab === 'skills' && <PlaceholderTab title="武功秘籍" desc="门派武功树、绝学条件、消点计算器等功能，等待数据导入..." />}
+              {activeTab === 'weapons' && <PlaceholderTab title="神兵利器" desc="武器图鉴、打造材料、耐久度说明等功能，等待数据导入..." />}
+              {activeTab === 'cheats' && <PlaceholderTab title="外挂辅助" desc="挂机脱机辅助说明、跑图坐标大全、自动运镖设置等内容..." />}
+            </div>
+
+            {/* 底部导航栏 - 添加安全区域和触摸优化 */}
+            <div className="bg-[#ebdabe] border-t border-[#d4be9a] flex justify-around py-2 md:py-3 fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl z-10 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+              <TabBarItem icon={<UserIcon size={20} className="md:w-6 md:h-6" />} label="人物" isActive={activeTab === 'character'} onClick={() => setActiveTab('character')} />
+              <TabBarItem icon={<BookIcon size={20} className="md:w-6 md:h-6" />} label="武功" isActive={activeTab === 'skills'} onClick={() => setActiveTab('skills')} />
+              <TabBarItem icon={<SwordIcon size={20} className="md:w-6 md:h-6" />} label="武器" isActive={activeTab === 'weapons'} onClick={() => setActiveTab('weapons')} />
+              <TabBarItem icon={<ZapIcon size={20} className="md:w-6 md:h-6" />} label="外挂" isActive={activeTab === 'cheats'} onClick={() => setActiveTab('cheats')} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- 页面组件 ---
+
+    function CharacterTab() {
+      const [subCategory, setSubCategory] = useState('stats');
+      const [showNovicePage, setShowNovicePage] = useState(false);
+
+      if (showNovicePage) {
+        return <NoviceSection onBack={() => setShowNovicePage(false)} />;
+      }
+
+      return (
+        <div className="p-3 md:p-4 space-y-4 md:space-y-5 animate-in fade-in slide-in-from-left-2 duration-300">
+          {/* 欢迎横幅 - 响应式 */}
+          <div className="bg-gradient-to-br from-red-900 via-red-800 to-amber-900 rounded-lg p-4 md:p-5 text-[#f7f2e8] shadow-lg relative overflow-hidden border border-red-950">
+            <div className="absolute -right-4 -bottom-4 opacity-10">
+              <SwordIcon size={120} />
+            </div>
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiPjwvcmVjdD4KPHBhdGggZD0iTTAgMEw4IDhaTThgMExgOFoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIj48L3BhdGg+Cjwvc3ZnPg==')] opacity-30"></div>
+            <h2 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 relative z-10 tracking-widest font-serif drop-shadow-md">大侠，欢迎归来！</h2>
+            <p className="text-xs md:text-sm opacity-90 relative z-10 font-light italic">武林至尊，宝刀屠龙，号令天下，莫敢不从。</p>
+          </div>
+
+          {/* 快捷链接 - 响应式 */}
+          <div className="grid grid-cols-4 gap-2 md:gap-3 text-center bg-[#fffbf2] p-2 md:p-3 rounded-lg shadow-sm border border-[#e3d1b5]">
+            <QuickLink icon={<ShieldIcon size={20} className="md:w-6 md:h-6" />} label="基础属性" isActive={subCategory === 'stats'} onClick={() => setSubCategory('stats')} />
+            <QuickLink icon={<BookOpenIcon size={20} className="md:w-6 md:h-6" />} label="基础武学" isActive={subCategory === 'skills'} onClick={() => setSubCategory('skills')} />
+            <QuickLink icon={<FileTextIcon size={20} className="md:w-6 md:h-6" />} label="江湖资历" isActive={subCategory === 'exp'} onClick={() => setSubCategory('exp')} />
+            <QuickLink icon={<HeartIcon size={20} className="md:w-6 md:h-6" />} label="人物气血" isActive={subCategory === 'hp'} onClick={() => setSubCategory('hp')} />
+          </div>
+
+          {/* 初出茅庐入口 - 响应式 */}
+          <div
+            onClick={() => setShowNovicePage(true)}
+            className="mt-3 md:mt-4 relative overflow-hidden rounded-xl shadow-md cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] touch-active"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-600 via-orange-600 to-red-700"></div>
+            <div className="absolute inset-[2px] bg-[#f7f2e8] rounded-[10px] flex items-center p-2.5 md:p-3">
+              <div className="w-9 h-9 md:w-11 md:h-11 bg-gradient-to-br from-amber-600 to-red-800 rounded-full flex items-center justify-center text-white shadow-inner shrink-0 mr-2 md:mr-3 border-2 border-amber-200">
+                <ManualIcon size={18} className="md:w-5 md:h-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-[15px] md:text-[17px] font-black text-transparent bg-clip-text bg-gradient-to-r from-red-800 to-red-600 tracking-widest drop-shadow-sm font-serif">
+                  初出茅庐
+                </h3>
+                <p className="text-[10px] md:text-[11px] font-bold text-amber-800 mt-0.5">
+                  🔥 无脑跟着国柱走，基本属性全都有
+                </p>
+              </div>
+              <div className="text-red-700 shrink-0 opacity-80 animate-pulse bg-red-100 rounded-full p-1 ml-1 border border-red-200">
+                <ChevronRightIcon size={18} className="md:w-5 md:h-5" />
+              </div>
+            </div>
+            <div className="p-2.5 md:p-3 w-9 h-9 md:w-11 md:h-11 box-content"></div>
+          </div>
+
+          <div className="pt-2">
+            {subCategory === 'stats' && <StatsSection />}
+            {subCategory === 'skills' && <SkillsSection />}
+            {subCategory === 'exp' && <ExpSection />}
+            {subCategory === 'hp' && <HpSection />}
+          </div>
+
+        </div>
+      );
+    }
+
+    function StatsSection() {
+      const [isWarningExpanded, setIsWarningExpanded] = useState(false);
+      const [isWuxingExpanded, setIsWuxingExpanded] = useState(false);
+
+      return (
+        <div className="space-y-3 md:space-y-4 animate-in fade-in duration-300">
+          
+          {/* 避坑警告 - 响应式 */}
+          <div
+            className="bg-[#fcf5eb] border-l-4 border-red-800 p-2.5 md:p-3 rounded shadow-sm cursor-pointer hover:bg-[#faeedd] transition-colors duration-200 border-y border-r border-[#e8dcc7] touch-active"
+            onClick={() => setIsWarningExpanded(!isWarningExpanded)}
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex items-start">
+                <AlertIcon className="text-red-800 mr-1.5 md:mr-2 shrink-0 mt-0.5" size={16} />
+                <div>
+                  <h4 className="text-xs md:text-sm font-bold text-red-900 mb-0.5 md:mb-1 flex flex-wrap items-center font-serif">
+                    新人必看避坑警告！
+                    <span className="text-[9px] md:text-[10px] bg-red-900 text-white px-1 md:px-1.5 py-0.5 rounded ml-1 md:ml-2 font-normal whitespace-nowrap font-sans mt-0.5 md:mt-0">
+                      {isWarningExpanded ? "收起详情" : "点击查看原理"}
+                    </span>
+                  </h4>
+                  {!isWarningExpanded && (
+                    <p className="text-[10px] md:text-xs text-red-800/80 leading-relaxed font-medium">
+                      属性超过60点后，系统将<span className="font-bold underline text-red-800">不让通过基本技能加属性</span>了！<br/>
+                      <span className="font-bold mt-1 inline-block text-red-900">结论：</span>吃丹药前，务必先练满 <span className="text-red-700 font-bold bg-red-100 px-1 rounded">[基内/搏击/闪躲]</span>。
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="text-red-800 mt-1 shrink-0 ml-1 md:ml-2">
+                {isWarningExpanded ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />}
+              </div>
+            </div>
+
+            {isWarningExpanded && (
+              <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-red-200/60 text-[10px] md:text-xs animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="space-y-2 md:space-y-2.5 text-red-900 mb-3 md:mb-4">
+                  <div className="flex items-start">
+                    <div className="bg-red-800 text-white rounded w-4 h-4 flex items-center justify-center shrink-0 mt-0.5 mr-1.5 md:mr-2 text-[9px] md:text-[10px] font-bold">1</div>
+                    <p className="leading-relaxed">
+                      <span className="font-bold">免费属性与限制：</span>在网金中，特定的基本功每升10级，就会"免费"赠送1点先天属性。但是官方设定了一个阈值：<span className="font-bold underline decoration-red-400 underline-offset-2">当单项属性达到或超过60点时，再升级基本功，系统就不再赠送那1点属性了。</span>
+                    </p>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="bg-red-800 text-white rounded w-4 h-4 flex items-center justify-center shrink-0 mt-0.5 mr-1.5 md:mr-2 text-[9px] md:text-[10px] font-bold">2</div>
+                    <p className="leading-relaxed">
+                      <span className="font-bold">丹药的机制是"强行附加"：</span>游戏里有很多珍贵的丹药（如腊八粥、脱胎换骨丹）可以永久增加属性。这些丹药增加的属性是直接算在你的面板里的。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 堆悟性终极指南 - 响应式 */}
+          <div 
+            className="bg-gradient-to-br from-[#fffdf5] to-[#f5ebd3] border border-[#d4be9a] p-2.5 md:p-3 rounded shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 relative overflow-hidden touch-active"
+            onClick={() => setIsWuxingExpanded(!isWuxingExpanded)}
+          >
+            <div className="absolute right-0 top-0 w-12 md:w-16 h-12 md:h-16 bg-amber-500/10 rounded-bl-full"></div>
+            <div className="flex items-start justify-between relative z-10">
+              <div className="flex items-start">
+                <div className="bg-amber-800 text-amber-50 p-0.5 md:p-1 rounded-sm mr-1.5 md:mr-2 shrink-0 mt-0.5 shadow-inner">
+                   <StarIcon size={14} className="md:w-4 md:h-4" />
+                </div>
+                <div>
+                  <p className="text-[10px] md:text-xs text-amber-900 leading-relaxed font-bold">
+                    新人上手，最应该堆哪个属性点：<br/>
+                    <span className="text-sm md:text-[15px] font-black text-red-700 tracking-widest inline-block mt-0.5 md:mt-1 font-serif drop-shadow-sm">悟性！悟性！悟性！</span>
+                  </p>
+                  {!isWuxingExpanded && (
+                    <div className="mt-1.5 md:mt-2 inline-block bg-amber-100 text-amber-900 text-[10px] md:text-[11px] px-2 md:px-2.5 py-0.5 md:py-1 rounded border border-amber-300 font-bold shadow-sm animate-pulse">
+                      👉 翻阅《悟性速成三十至九十秘卷》
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="text-amber-800 mt-1 shrink-0 ml-1 md:ml-2 bg-amber-200/50 p-0.5 md:p-1 rounded">
+                {isWuxingExpanded ? <ChevronUpIcon size={14} className="md:w-4 md:h-4" /> : <ChevronDownIcon size={14} className="md:w-4 md:h-4" />}
+              </div>
+            </div>
+
+            {isWuxingExpanded && (
+              <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-amber-300/50 animate-in fade-in slide-in-from-top-2 duration-300 relative z-10">
+               <p className="text-[10px] md:text-xs text-amber-800 text-center mb-2 md:mb-3 font-serif">—— 请大侠参照下表，将悟性推至化境 ——</p>
+               <div className="text-center text-[10px] md:text-xs text-amber-700 mt-1 md:mt-2">（展开详情同上版本，篇幅所限折叠展示）</div>
+              </div>
+            )}
+          </div>
+          
+          {/* 人物根骨剖析 - 响应式 */}
+          <div>
+            <div className="flex items-center mb-2 md:mb-3">
+              <div className="w-1 md:w-1.5 h-3 md:h-4 bg-red-900 rounded-sm mr-1.5 md:mr-2"></div>
+              <h3 className="text-base md:text-lg font-bold text-amber-950 font-serif">人物根骨剖析</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2 md:gap-3">
+              {ATTRIBUTES_DATA.panel4.map((attr, idx) => (
+                <div key={idx} className="bg-[#fffdf8] border border-[#e8dcc7] p-2 md:p-3 rounded shadow-[1px_1px_0px_#e8dcc7] flex flex-col justify-center">
+                  <span className="font-bold text-red-900 text-xs md:text-sm mb-0.5 md:mb-1 font-serif">{attr.name}</span>
+                  <span className="text-[10px] md:text-xs text-gray-600 leading-tight">{attr.desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function SkillsSection() { return <div className="p-3 md:p-4 text-center text-gray-500 text-xs md:text-sm">此页专注于排版，内容略...</div>; }
+    function ExpSection() { return <div className="p-3 md:p-4 text-center text-gray-500 text-xs md:text-sm">此页专注于排版，内容略...</div>; }
+    function HpSection() { return <div className="p-3 md:p-4 text-center text-gray-500 text-xs md:text-sm">此页专注于排版，内容略...</div>; }
+
+    // --- 武林秘籍专用组件：步骤条（响应式）---
+    function WuxiaStep({ index, title, imageSrc }) {
+      const numerals = ["零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "拾", "拾壹", "拾貳", "拾叄", "拾肆", "拾伍", "拾陸", "拾柒", "拾捌"];
+      const numStr = numerals[index] || index;
+      
+      return (
+        <div className="mb-3 md:mb-5 relative pl-4 md:pl-5 border-l-2 border-amber-700/30 ml-2">
+          {/* 左侧的菱形连接点 */}
+          <div className="absolute -left-[5px] top-1 w-2 h-2 rotate-45 bg-amber-600 border border-amber-900 shadow-sm"></div>
+          
+          {/* 标题栏 - 响应式 */}
+          <div className="flex items-center mb-1.5 md:mb-2">
+            <div className="bg-gradient-to-b from-red-800 to-red-950 text-red-50 text-[10px] md:text-[11px] font-black px-1 md:px-1.5 py-0.5 rounded-sm border border-red-950 shadow-[1px_1px_0px_rgba(69,10,10,0.5)] mr-1.5 md:mr-2 font-serif tracking-widest whitespace-nowrap">
+              第{numStr}式
+            </div>
+            <h5 className="text-amber-950 font-bold text-xs md:text-sm flex-1 pb-0.5 border-b border-dashed border-amber-900/30" style={{fontFamily: 'serif'}}>
+              {title}
+            </h5>
+          </div>
+
+          {/* 图片容器 - 响应式 */}
+          <div className="rounded-md overflow-hidden border-2 border-[#d4be9a] shadow-md bg-[#fffdf5] p-0.5 md:p-1">
+            <img 
+              src={"./" + imageSrc}
+              alt={title} 
+              className="w-full h-auto object-cover rounded-sm opacity-90 hover:opacity-100 transition-opacity"
+              loading="lazy"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = `https://placehold.co/600x300/EAD8C3/78350F.png?text=图缺:+${imageSrc.split('/').pop()}`;
+              }}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    // 5. 初出茅庐 (深度武侠重构版)
+    function NoviceSection({ onBack }) {
+      const [unlockedDay, setUnlockedDay] = useState(1);
+      const [viewingDay, setViewingDay] = useState(1);
+      const [expandedCategory, setExpandedCategory] = useState(null);
+
+      const toggleCategory = (categoryName) => {
+        setExpandedCategory(prev => prev === categoryName ? null : categoryName);
+      };
+
+      const daysData = [
+        { id: 1, title: "第一日：初入江湖", teaser: "熟悉基础操作，分配初始属性点" },
+        { id: 2, title: "第二日：拜师学艺", teaser: "加入心仪门派，初窥门径" },
+        { id: 3, title: "第三日：肝脑涂地", teaser: "闭关挂机，基内搏击闪躲冲140" },
+        { id: 4, title: "第四日：脱胎换骨", teaser: "狂吃丹药，属性冲刺极限" },
+        { id: 5, title: "第五日：名扬天下", teaser: "武功大成，出关实战打点" },
+      ];
+
+      return (
+        <div className="animate-in fade-in slide-in-from-right-4 duration-300 bg-[#f4eadd] min-h-full pb-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.05\'/%3E%3C/svg%3E")' }}>
+          
+          {/* 顶部悬浮返回条 (木牌质感) */}
+          <div className="sticky top-0 z-20 bg-[#e8dcc7] border-b-2 border-[#c2aa80] p-3 flex items-center justify-between shadow-md">
+            <div onClick={onBack} className="flex items-center cursor-pointer text-amber-950 hover:text-red-800 transition-colors">
+              <ChevronLeftIcon size={22} className="mr-1" />
+              <span className="font-bold text-[15px] font-serif">返回客栈</span>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if(confirm('大侠，散功重修将失去当前所有进度，确定要重新来过吗？')) {
+                  setUnlockedDay(1);
+                  setViewingDay(1);
+                }
+              }}
+              className="text-xs bg-gradient-to-b from-red-800 to-red-950 text-[#f7f2e8] px-3 py-1.5 rounded-sm border border-red-950 shadow-[1px_1px_0px_#450a0a] hover:translate-y-[1px] hover:shadow-none transition-all font-bold font-serif tracking-widest"
+            >
+              散功重修
+            </button>
+          </div>
+
+          <div className="px-5 pt-8 pb-4 text-center relative">
+            <h2 className="text-2xl font-black text-amber-950 tracking-widest drop-shadow-sm mb-1 font-serif border-b-2 border-double border-amber-900/30 pb-2 inline-block px-4">
+              江湖历练 · 绝世秘卷
+            </h2>
+            <p className="text-xs text-amber-800/80 mt-2 font-medium">按部就班，五日登峰造极！</p>
+          </div>
+
+          <div className="p-4">
+            <div className="relative pl-7 space-y-5">
+              {/* 贯穿的垂直线 (竹简装订线) */}
+              <div className="absolute left-[11px] top-4 bottom-6 w-1 bg-[#c2aa80] border-x border-[#8c744f]"></div>
+
+              {daysData.map((day) => {
+                const isCompleted = day.id < unlockedDay;
+                const isCurrent = day.id === unlockedDay;
+                const isLocked = day.id > unlockedDay;
+                const isViewing = day.id === viewingDay && (isCurrent || isCompleted);
+
+                return (
+                  <div key={day.id} className="relative">
+                    {/* 节点大印章 */}
+                    <div className={`absolute -left-9 w-8 h-8 rounded-sm border-2 flex items-center justify-center shadow-md z-10 transition-colors duration-300 rotate-3 ${
+                      isCompleted ? 'bg-[#f4eadd] border-emerald-700 text-emerald-700' :
+                      isCurrent ? 'bg-red-900 border-red-950 text-red-100 ring-2 ring-red-900/30' :
+                      'bg-[#e8dcc7] border-[#c2aa80] text-[#a38f6b]'
+                    }`}>
+                      {isCompleted ? <span className="font-serif font-bold text-lg">成</span> :
+                       isCurrent ? <span className="font-serif font-black text-lg">修</span> :
+                       <LockIcon size={14} />}
+                    </div>
+
+                    <div 
+                      onClick={() => { if (isCompleted || isCurrent) setViewingDay(day.id); }}
+                      className={`rounded-sm p-4 transition-all duration-300 border-2 ${
+                        isCompleted ? 'bg-[#fffdf8] border-[#c2aa80] shadow-[2px_2px_0px_#c2aa80] cursor-pointer' :
+                        isCurrent ? 'bg-[#fffdf8] border-red-900 shadow-[3px_3px_0px_#7f1d1d] transform scale-[1.01] origin-left cursor-pointer' :
+                        'bg-[#e8dcc7]/50 border-[#d4be9a] opacity-60 grayscale-[0.3]'
+                      }`}>
+                    
+                    <div className="flex justify-between items-start mb-1">
+                      <h4 className={`font-black text-base font-serif tracking-widest ${
+                        isCompleted ? 'text-emerald-900' : isCurrent ? 'text-red-900' : 'text-amber-900/60'
+                      }`}>
+                        {day.title}
+                      </h4>
+                      {isCompleted && <span className="text-[10px] text-emerald-800 border border-emerald-800 px-1 rounded-sm font-bold font-serif rotate-[-5deg]">已勘破</span>}
+                      {isCurrent && <span className="text-[10px] text-red-100 bg-red-900 px-1 rounded-sm font-bold font-serif animate-pulse">修炼中</span>}
+                    </div>
+
+                    <p className={`text-[12px] font-medium ${isViewing ? 'text-amber-900' : 'text-amber-700/70'}`}>
+                      {day.teaser}
+                      {(isCompleted || isCurrent) && !isViewing && (
+                        <span className="text-red-700 ml-2 font-bold font-serif">点击翻阅 ▾</span>
+                      )}
+                    </p>
+
+                    {/* 展开的秘籍详情区 */}
+                    {isViewing && (
+                      <div className="mt-4 pt-4 border-t-2 border-dashed border-[#d4be9a] animate-in fade-in duration-500">
+                        
+                        {day.id === 1 && (
+                          <div className="space-y-4">
+                            
+                            {/* 卷一：账号建立 */}
+                            <div>
+                              <button
+                                onClick={() => toggleCategory('account')}
+                                className="w-full relative overflow-hidden rounded-sm shadow-sm cursor-pointer transition-all duration-300 group border border-amber-900/50"
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-r from-amber-800 via-amber-700 to-amber-900"></div>
+                                <div className="absolute inset-[2px] border border-amber-400/30 rounded-sm"></div>
+                                <div className="relative z-10 flex items-center justify-between py-2.5 px-3">
+                                  <div className="flex items-center">
+                                    <div className="text-amber-200 mr-2 border border-amber-400/30 p-1 rounded-sm bg-amber-900/50 shadow-inner">
+                                      <BookOpenIcon size={18} />
+                                    </div>
+                                    <div className="text-left flex flex-col">
+                                      <span className="text-[15px] font-bold text-amber-50 tracking-widest font-serif drop-shadow-md">
+                                        卷一 · 踏足江湖
+                                      </span>
+                                      <span className="text-[10px] text-amber-300/80 font-serif tracking-wide">账号建立与基础</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-amber-300">
+                                    {expandedCategory === 'account' ? <ChevronUpIcon size={20} /> : <ChevronDownIcon size={20} />}
+                                  </div>
+                                </div>
+                              </button>
+                              
+                              {expandedCategory === 'account' && (
+                                <div className="mt-4 px-2 py-1 animate-in fade-in duration-300">
+                                  <WuxiaStep index={1} title="账号初次登录" imageSrc="public/images/新建账号1(登录账号).png" />
+                                  <WuxiaStep index={2} title="修改密码暗码" imageSrc="public/images/新建账号2(修改密码暗码).png" />
+                                  <WuxiaStep index={3} title="选出生城市" imageSrc="public/images/新建账号3(选城市).png" />
+                                  <WuxiaStep index={4} title="反复洗髓 (ROLL出悟性初始25)" imageSrc="public/images/新建账号4(ROLL属性).png" />
+                                  <WuxiaStep index={5} title="天资分配 (5点自由点全加悟性)" imageSrc="public/images/新建账号5(悟性30).png" />
+                                  <WuxiaStep index={6} title="官府认证 (防沉迷验证)" imageSrc="public/images/新建账号6(防沉迷系统).png" />
+                                  <WuxiaStep index={7} title="造册登记 (系统录入)" imageSrc="public/images/新建账号7(防沉迷系统录入).png" />
+                                  <WuxiaStep index={8} title="验明正身 (认证成功)" imageSrc="public/images/新建账号8(防沉迷认证成功).png" />
+                                  <WuxiaStep index={9} title="明眸夜视 (特殊开关优化)" imageSrc="public/images/新建账号9(特殊开关).png" />
+                                  <WuxiaStep index={10} title="方寸大千 (视窗模式)" imageSrc="public/images/新建账号10(视窗模式).png" />
+                                  <WuxiaStep index={11} title="官网充值入口" imageSrc="public/images/新建账号11官网充值入口.png" />
+                                  <WuxiaStep index={12} title="充值页面" imageSrc="public/images/新建账号12充值页面.png" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* 卷二：金庸币购买 */}
+                            <div>
+                              <button
+                                onClick={() => toggleCategory('money')}
+                                className="w-full relative overflow-hidden rounded-sm shadow-sm cursor-pointer transition-all duration-300 group border border-red-950"
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-r from-red-900 via-red-800 to-red-950"></div>
+                                <div className="absolute inset-[2px] border border-red-400/30 rounded-sm"></div>
+                                <div className="relative z-10 flex items-center justify-between py-2.5 px-3">
+                                  <div className="flex items-center">
+                                    <div className="text-red-200 mr-2 border border-red-400/30 p-1 rounded-sm bg-red-950/50 shadow-inner">
+                                      <BookOpenIcon size={18} />
+                                    </div>
+                                    <div className="text-left flex flex-col">
+                                      <span className="text-[15px] font-bold text-red-50 tracking-widest font-serif drop-shadow-md">
+                                        卷二 · 盘缠行囊
+                                      </span>
+                                      <span className="text-[10px] text-red-300/80 font-serif tracking-wide">金庸币与必备工具</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-red-300">
+                                    {expandedCategory === 'money' ? <ChevronUpIcon size={20} /> : <ChevronDownIcon size={20} />}
+                                  </div>
+                                </div>
+                              </button>
+
+                              {expandedCategory === 'money' && (
+                                <div className="mt-4 px-2 py-1 animate-in fade-in duration-300">
+                                  <WuxiaStep index={1} title="兑换银票 (查看并使用20W)" imageSrc="public/images/工具购买1.查看并使用身上银票20W.png" />
+                                  <WuxiaStep index={2} title="寻觅商贾 (找到工具商)" imageSrc="public/images/工具购买2.找到工具商.png" />
+                                  <WuxiaStep index={3} title="储蓄有道 (购买随身钱庄)" imageSrc="public/images/工具购买3.购买随身钱庄.png" />
+                                  <WuxiaStep index={4} title="露宿荒野 (购买帐篷)" imageSrc="public/images/工具购买4.购买帐篷.png" />
+                                  <WuxiaStep index={5} title="时光宝盒 (获得神佑丹)" imageSrc="public/images/工具购买5.鼠标右键打开时光宝盒得到神佑丹.png" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* 卷三：扬州武馆 */}
+                            <div>
+                              <button
+                                onClick={() => toggleCategory('yangzhou')}
+                                className="w-full relative overflow-hidden rounded-sm shadow-sm cursor-pointer transition-all duration-300 group border border-purple-950"
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-950"></div>
+                                <div className="absolute inset-[2px] border border-purple-400/30 rounded-sm"></div>
+                                <div className="relative z-10 flex items-center justify-between py-2.5 px-3">
+                                  <div className="flex items-center">
+                                    <div className="text-purple-200 mr-2 border border-purple-400/30 p-1 rounded-sm bg-purple-950/50 shadow-inner">
+                                      <BookOpenIcon size={18} />
+                                    </div>
+                                    <div className="text-left flex flex-col">
+                                      <span className="text-[15px] font-bold text-purple-50 tracking-widest font-serif drop-shadow-md">
+                                        卷三 · 扬州拜师
+                                      </span>
+                                      <span className="text-[10px] text-purple-300/80 font-serif tracking-wide">初窥门径习双龙</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-purple-300">
+                                    {expandedCategory === 'yangzhou' ? <ChevronUpIcon size={20} /> : <ChevronDownIcon size={20} />}
+                                  </div>
+                                </div>
+                              </button>
+                              
+                              {expandedCategory === 'yangzhou' && (
+                                <div className="mt-4 px-2 py-1 animate-in fade-in duration-300">
+                                  <WuxiaStep index={1} title="寻访武馆 (查看地图)" imageSrc="public/images/扬州武馆1 - 查看地图走到扬州武馆.png" />
+                                  <WuxiaStep index={2} title="叩首拜师 (拜师汪龙)" imageSrc="public/images/扬州武馆2 - 拜师汪龙学武功.png" />
+                                  <WuxiaStep index={3} title="应对考问 (对话选1)" imageSrc="public/images/扬州武馆3 - 拜师汪龙学武功对话选1.png" />
+                                  <WuxiaStep index={4} title="束脩之礼 (交300金庸币)" imageSrc="public/images/扬州武馆4 - 拜师交300金庸币.png" />
+                                  <WuxiaStep index={5} title="浏览绝学 (查看武功列表)" imageSrc="public/images/扬州武馆5 - 查看武功列表.png" />
+                                  <WuxiaStep index={6} title="领悟招式 (双击习得双龙出海)" imageSrc="public/images/扬州武馆6 - 双击习得双龙出海.png" />
+                                  <WuxiaStep index={7} title="勤加研习 (加学点至双龙出海)" imageSrc="public/images/扬州武馆7 - 右键学点全部加到双龙出海.png" />
+                                  <WuxiaStep index={8} title="安营扎寨 (用帐篷睡一觉恢复)" imageSrc="public/images/扬州武馆8 - 发现精力没了右键身上的帐篷睡一觉满了.png" />
+                                  <WuxiaStep index={9} title="内练一口气 (点数加基础内功)" imageSrc="public/images/扬州武馆9 - 剩余点数加到基础内功.png" />
+                                  <WuxiaStep index={10} title="学成下山 (扬州武馆毕业)" imageSrc="public/images/扬州武馆10 - 扬州武馆毕业.png" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* 卷四：挂机打点 */}
+                            <div>
+                              <button
+                                onClick={() => toggleCategory('afk')}
+                                className="w-full relative overflow-hidden rounded-sm shadow-sm cursor-pointer transition-all duration-300 group border border-emerald-950"
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-900 via-teal-900 to-emerald-950"></div>
+                                <div className="absolute inset-[2px] border border-emerald-400/30 rounded-sm"></div>
+                                <div className="relative z-10 flex items-center justify-between py-2.5 px-3">
+                                  <div className="flex items-center">
+                                    <div className="text-emerald-200 mr-2 border border-emerald-400/30 p-1 rounded-sm bg-emerald-950/50 shadow-inner">
+                                      <BookOpenIcon size={18} />
+                                    </div>
+                                    <div className="text-left flex flex-col">
+                                      <span className="text-[15px] font-bold text-emerald-50 tracking-widest font-serif drop-shadow-md">
+                                        卷四 · 闭关苦修
+                                      </span>
+                                      <span className="text-[10px] text-emerald-300/80 font-serif tracking-wide">自动挂机与打点</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-emerald-300">
+                                    {expandedCategory === 'afk' ? <ChevronUpIcon size={20} /> : <ChevronDownIcon size={20} />}
+                                  </div>
+                                </div>
+                              </button>
+                              
+                              {expandedCategory === 'afk' && (
+                                <div className="mt-4 px-2 py-1 animate-in fade-in duration-300">
+                                  <WuxiaStep index={1} title="游侠环境配置入口" imageSrc="public/images/游侠1环境设置入口.png" />
+                                  <WuxiaStep index={2} title="环境设置-高级设置" imageSrc="public/images/游侠2环境设置高级设置.png" />
+                                  <WuxiaStep index={3} title="打点设置入口" imageSrc="public/images/游侠3打点入口.png" />
+                                  <WuxiaStep index={4} title="打点基本设置" imageSrc="public/images/游侠4打点基本设置.png" />
+                                  <WuxiaStep index={5} title="打点进阶设置" imageSrc="public/images/游侠5打点进阶设置.png" />
+                                  <WuxiaStep index={6} title="打点高级设置" imageSrc="public/images/游侠6打点高级设置.png" />
+                                  <WuxiaStep index={7} title="打点捡拣宝设置" imageSrc="public/images/游侠7捡拣宝设置.png" />
+                                  <WuxiaStep index={8} title="娱乐商城入口" imageSrc="public/images/游侠8娱乐商城入口.png" />
+                                  
+                                  {/* 提示：物品购买渠道 */}
+                                  <div className="my-4 mx-1 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-600 rounded-r shadow-sm">
+                                    <div className="flex items-start">
+                                      <div className="text-amber-600 mr-2 mt-0.5">
+                                        <InfoIcon size={16} />
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-amber-800 font-medium leading-relaxed">
+                                          <span className="font-bold text-amber-900">💡 温馨提示：</span>
+                                          以下物品可从<span className="text-amber-900 font-bold">其他玩家(商人)</span>处购买，请自行对比价格，择优而入。
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <WuxiaStep index={9} title="购买学点令牌" imageSrc="public/images/游侠9购买学点令牌.png" />
+                                  <WuxiaStep index={10} title="购买记忆天书(空)" imageSrc="public/images/游侠10购买记忆天书(空).png" />
+                                  <WuxiaStep index={11} title="购买网龙银票" imageSrc="public/images/游侠11购买网龙银票.png" />
+                                  <WuxiaStep index={12} title="购买娃娃车" imageSrc="public/images/游侠12购买娃娃车.png" />
+                                  <WuxiaStep index={13} title="购买负重袋" imageSrc="public/images/游侠13购买负重袋.png" />
+                                  <WuxiaStep index={14} title="购买百纳袋" imageSrc="public/images/游侠14购买百纳袋.png" />
+                                  <WuxiaStep index={15} title="找到已购买的学点金牌" imageSrc="public/images/游侠15内找到已购买的学点金牌.png" />
+                                  <WuxiaStep index={16} title="使用学点金牌" imageSrc="public/images/游侠16内找到右键单击使用学点金牌.png" />
+                                  <WuxiaStep index={17} title="启动打点" imageSrc="public/images/游侠17启动打点.png" />
+                                  <WuxiaStep index={18} title="打点成功" imageSrc="public/images/游侠18打点成功.png" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {day.id !== 1 && (
+                           <div className="py-4 bg-[#fffdf8] border-2 border-dashed border-[#d4be9a] text-center rounded-sm">
+                             <p className="text-sm text-amber-800 font-medium font-serif tracking-widest">
+                               后续秘籍拼命中...
+                             </p>
+                           </div>
+                        )}
+
+                        {isCurrent && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (unlockedDay < daysData.length) {
+                                setUnlockedDay(unlockedDay + 1);
+                                setViewingDay(unlockedDay + 1);
+                              } else {
+                                alert("恭喜大侠，神功大成，可出关矣！");
+                              }
+                            }}
+                            className="w-full mt-5 py-3 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiPjwvcmVjdD4KPHBhdGggZD0iTTAgMEw4IDhaTThgMExgOFoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIj48L3BhdGg+Cjwvc3ZnPg==')] bg-red-900 text-[#f7f2e8] font-bold text-[15px] font-serif tracking-widest rounded-sm border-2 border-red-950 shadow-[2px_2px_0px_#450a0a] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#450a0a] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center"
+                          >
+                            {unlockedDay < daysData.length ? "参透此卷，修炼下一日" : "神功大成，破关而出！"}
+                          </button>
+                        )}
+
+                        {isCompleted && (
+                          <div className="text-center text-sm text-emerald-800 font-bold mt-5 py-2 border-t border-b border-emerald-800/30 font-serif tracking-widest bg-emerald-50/50">
+                            印：此卷已然勘破
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {isLocked && (
+                      <div className="mt-2.5 text-[10px] text-amber-900/40 flex items-center font-bold font-serif tracking-widest">
+                        <LockIcon size={12} className="mr-1" /> 需前置心法方可解锁
+                      </div>
+                    )}
+                  </div>
+                </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PlaceholderTab({ title, desc }) {
+  return (
+    <div className="flex flex-col items-center justify-center h-full p-6 text-center mt-20">
+      <div className="w-16 h-16 bg-[#e8dcc7] rounded-full flex items-center justify-center text-amber-900 mb-4 shadow-inner border border-[#d4be9a]">
+        <InfoIcon size={32} />
+      </div>
+      <h2 className="text-xl font-bold text-amber-950 mb-2 font-serif">{title}：修缮中</h2>
+      <p className="text-sm text-amber-800/70 leading-relaxed max-w-xs">{desc}</p>
+    </div>
+  );
+}
+
+function QuickLink({ icon, label, isActive, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      className={`flex flex-col items-center justify-center cursor-pointer transition-all duration-200 py-1 touch-active ${isActive ? 'opacity-100' : 'opacity-60 hover:opacity-100 active:opacity-80'}`}
+    >
+      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-sm border flex items-center justify-center mb-1 md:mb-1.5 transition-colors ${isActive ? 'bg-red-900 text-[#f7f2e8] border-red-950' : 'bg-[#f4eadd] text-amber-900 border-[#d4be9a]'}`}>
+        {icon}
+      </div>
+      <span className={`text-[10px] md:text-[11px] font-bold font-serif tracking-wider ${isActive ? 'text-red-900' : 'text-amber-900'}`}>{label}</span>
+    </div>
+  );
+}
+
+function TabBarItem({ icon, label, isActive, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex flex-col items-center justify-center w-full py-2 md:py-3 transition-colors duration-200 touch-active no-select ${isActive ? 'text-red-900' : 'text-amber-900/60 hover:text-amber-900 active:text-amber-800'}`}
+    >
+      <div className={`mb-0.5 md:mb-1 transition-transform duration-200 ${isActive ? 'scale-110 drop-shadow-sm' : 'scale-100'}`}>
+        {icon}
+      </div>
+      <span className="text-[11px] md:text-[12px] font-bold font-serif tracking-widest">{label}</span>
+    </button>
+  );
+}
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
