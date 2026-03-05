@@ -1,7 +1,7 @@
 import React from 'react';
-import { BookOpenIcon, ChevronUpIcon, ChevronDownIcon } from '../icons';
-import WuxiaStep from '../WuxiaStep';
-import { VOLUME1_STEPS } from '../../data/attributes';
+import { BookOpenIcon, ChevronUpIcon, ChevronDownIcon } from './icons';
+import WuxiaStep from './WuxiaStep';
+import { VOLUME1_STEPS } from '../data/attributes';
 
 function Volume1({ isExpanded, onToggle }) {
   return (

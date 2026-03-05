@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ATTRIBUTES_DATA } from '../../data/attributes';
-import { AlertIcon, StarIcon, ChevronUpIcon, ChevronDownIcon } from '../icons';
+import { ATTRIBUTES_DATA } from '../data/attributes';
+import { AlertIcon, StarIcon, ChevronUpIcon, ChevronDownIcon } from '../components/icons';
 
 function StatsSection() {
   const [isWarningExpanded, setIsWarningExpanded] = useState(false);

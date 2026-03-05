@@ -1,7 +1,7 @@
 import React from 'react';
-import { BookOpenIcon, ChevronUpIcon, ChevronDownIcon, InfoIcon } from '../icons';
-import WuxiaStep from '../WuxiaStep';
-import { VOLUME4_STEPS } from '../../data/attributes';
+import { BookOpenIcon, ChevronUpIcon, ChevronDownIcon, InfoIcon } from './icons';
+import WuxiaStep from './WuxiaStep';
+import { VOLUME4_STEPS } from '../data/attributes';
 
 function Volume4({ isExpanded, onToggle }) {
   // 分割步骤：前8步和后10步（中间插入提示）
