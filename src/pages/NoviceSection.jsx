@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronLeftIcon, LockIcon } from '../components/icons';
-import { DAYS_DATA } from '../../data/attributes';
-import Volume1 from '../../components/Volume1';
-import Volume2 from '../../components/Volume2';
-import Volume3 from '../../components/Volume3';
-import Volume4 from '../../components/Volume4';
+import { DAYS_DATA } from '../data/attributes';
+import Volume1 from '../components/Volume1';
+import Volume2 from '../components/Volume2';
+import Volume3 from '../components/Volume3';
+import Volume4 from '../components/Volume4';
 
 function NoviceSection({ onBack }) {
   const [unlockedDay, setUnlockedDay] = useState(1);
