@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { ChevronLeftIcon, LockIcon } from '../components/icons';
-import { DAYS_DATA } from '../data/attributes';
+import { DAYS_DATA, DAY2_VOLUMES, DAY3_VOLUMES, DAY4_VOLUMES, DAY5_VOLUMES } from '../data/attributes';
 import Volume1 from '../components/Volume1';
 import Volume2 from '../components/Volume2';
 import Volume3 from '../components/Volume3';
 import Volume4 from '../components/Volume4';
+import DayContent from '../components/DayContent';
 
 function NoviceSection({ onBack }) {
   const [unlockedDay, setUnlockedDay] = useState(1);
@@ -98,6 +99,7 @@ function NoviceSection({ onBack }) {
                 {isViewing && (
                   <div className="mt-4 pt-4 border-t-2 border-dashed border-[#d4be9a] animate-in fade-in duration-500">
                     
+                    {/* 第一日 */}
                     {day.id === 1 && (
                       <div className="space-y-4">
                         <Volume1 
@@ -119,12 +121,40 @@ function NoviceSection({ onBack }) {
                       </div>
                     )}
 
-                    {day.id !== 1 && (
-                       <div className="py-4 bg-[#fffdf8] border-2 border-dashed border-[#d4be9a] text-center rounded-sm">
-                         <p className="text-sm text-amber-800 font-medium font-serif tracking-widest">
-                           后续秘籍拼命中...
-                         </p>
-                       </div>
+                    {/* 第二日：拜师学艺 */}
+                    {day.id === 2 && (
+                      <DayContent
+                        volumes={Object.values(DAY2_VOLUMES)}
+                        expandedCategory={expandedCategory}
+                        onToggle={toggleCategory}
+                      />
+                    )}
+
+                    {/* 第三日：肝脑涂地 */}
+                    {day.id === 3 && (
+                      <DayContent
+                        volumes={Object.values(DAY3_VOLUMES)}
+                        expandedCategory={expandedCategory}
+                        onToggle={toggleCategory}
+                      />
+                    )}
+
+                    {/* 第四日：脱胎换骨 */}
+                    {day.id === 4 && (
+                      <DayContent
+                        volumes={Object.values(DAY4_VOLUMES)}
+                        expandedCategory={expandedCategory}
+                        onToggle={toggleCategory}
+                      />
+                    )}
+
+                    {/* 第五日：名扬天下 */}
+                    {day.id === 5 && (
+                      <DayContent
+                        volumes={Object.values(DAY5_VOLUMES)}
+                        expandedCategory={expandedCategory}
+                        onToggle={toggleCategory}
+                      />
                     )}
 
                     {isCurrent && (

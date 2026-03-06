@@ -61,7 +61,7 @@ export const WUXING_STEPS = [
 // 江湖历练数据
 export const DAYS_DATA = [
   { id: 1, title: "第一日：初入江湖", teaser: "熟悉基础操作，分配初始属性点" },
-  { id: 2, title: "第二日：拜师学艺", teaser: "加入心仪门派，初窥门径" },
+  { id: 2, title: "第二日：提高悟性", teaser: "加入心仪门派，初窥门径" },
   { id: 3, title: "第三日：肝脑涂地", teaser: "闭关挂机，基内搏击闪躲冲140" },
   { id: 4, title: "第四日：脱胎换骨", teaser: "狂吃丹药，属性冲刺极限" },
   { id: 5, title: "第五日：名扬天下", teaser: "武功大成，出关实战打点" },
@@ -127,3 +127,262 @@ export const VOLUME4_STEPS = [
   { index: 17, title: "启动打点", imageSrc: "images/游侠17启动打点.png" },
   { index: 18, title: "打点成功", imageSrc: "images/游侠18打点成功.png" },
 ];
+
+// ==================== 第二日：拜师学艺 ====================
+export const DAY2_VOLUMES = {
+  volume1: {
+    title: "卷一 · 门派抉择",
+    subtitle: "各大门派特色一览",
+    color: "blue",
+    steps: [
+      { index: 1, title: "门派总览（少林、武当、峨眉等）", content: "各门派武学特色与定位介绍" },
+      { index: 2, title: "门派入门条件", content: "属性要求、性别限制等" },
+      { index: 3, title: "门派武学路线", content: "各门派核心武功与发展方向" },
+    ]
+  },
+  volume2: {
+    title: "卷二 · 正式拜师",
+    subtitle: "完成入门仪式",
+    color: "purple",
+    steps: [
+      { index: 1, title: "前往门派驻地", content: "使用驿站或跑图到达" },
+      { index: 2, title: "拜见掌门", content: "与掌门对话完成拜师" },
+      { index: 3, title: "入门考验", content: "部分门派需要完成考验任务" },
+    ]
+  },
+  volume3: {
+    title: "卷三 · 初窥门径",
+    subtitle: "学习门派基础武功",
+    color: "emerald",
+    steps: [
+      { index: 1, title: "查看门派武功列表", content: "了解可学习的武功" },
+      { index: 2, title: "学习入门武功", content: "优先学习核心攻击技能" },
+      { index: 3, title: "武功升级", content: "使用学点提升武功等级" },
+    ]
+  }
+};
+
+// ==================== 第三日：肝脑涂地 ====================
+export const DAY3_VOLUMES = {
+  volume1: {
+    title: "卷一 · 基础内功",
+    subtitle: "冲击140级大关",
+    color: "red",
+    steps: [
+      { index: 1, title: "寻找NPC白自在", content: "位于京城，可消点到140级" },
+      { index: 2, title: "消点技巧", content: "使用神佑丹加速消点" },
+      { index: 3, title: "自修141-150", content: "140级后需自修提升" },
+      { index: 4, title: "基内属性加成", content: "每10级+1根骨，满级+14根骨" },
+    ]
+  },
+  volume2: {
+    title: "卷二 · 搏击格斗",
+    subtitle: "拳类武学根基",
+    color: "amber",
+    steps: [
+      { index: 1, title: "消点位置", content: "同样找白自在消点" },
+      { index: 2, title: "140级上限", content: "搏击格斗上限140级" },
+      { index: 3, title: "属性加成", content: "每10级+1臂力，满级+14臂力" },
+      { index: 4, title: "武学关联", content: "决定拳类武学自修上限" },
+    ]
+  },
+  volume3: {
+    title: "卷三 · 闪躲纵跃",
+    subtitle: "生存能力根基",
+    color: "cyan",
+    steps: [
+      { index: 1, title: "消点位置", content: "白自在处消点" },
+      { index: 2, title: "140级上限", content: "闪躲纵跃上限140级" },
+      { index: 3, title: "属性加成", content: "每10级+1机敏，满级+14机敏" },
+      { index: 4, title: "闪避效果", content: "提升战斗中的闪避概率" },
+    ]
+  }
+};
+
+// ==================== 第四日：脱胎换骨 ====================
+export const DAY4_VOLUMES = {
+  volume1: {
+    title: "卷一 · 属性丹药",
+    subtitle: "永久提升先天属性",
+    color: "rose",
+    steps: [
+      { index: 1, title: "腊八粥", content: "悟性+3，限量使用" },
+      { index: 2, title: "脱胎换骨丹", content: "随机属性+1" },
+      { index: 3, title: "悟性丹/仙丹", content: "专门提升悟性" },
+      { index: 4, title: "任意属性丹", content: "指定属性+1，共10颗" },
+    ]
+  },
+  volume2: {
+    title: "卷二 · 装备加成",
+    subtitle: "穿戴提升属性",
+    color: "violet",
+    steps: [
+      { index: 1, title: "天勤套装", content: "帽子、护手、袍、靴" },
+      { index: 2, title: "神悟武器", content: "悟性+3" },
+      { index: 3, title: "破军披风", content: "悟性+7" },
+      { index: 4, title: "玄武项链", content: "悟性+9（可借用）" },
+    ]
+  },
+  volume3: {
+    title: "卷三 · 属性极限",
+    subtitle: "冲刺属性上限",
+    color: "orange",
+    steps: [
+      { index: 1, title: "属性上限", content: "先天属性理论上限100+" },
+      { index: 2, title: "计算公式", content: "初始+基本功+丹药+装备" },
+      { index: 3, title: "优先顺序", content: "先基本功，后丹药" },
+    ]
+  }
+};
+
+// ==================== 第五日：名扬天下 ====================
+export const DAY5_VOLUMES = {
+  volume1: {
+    title: "卷一 · 实战准备",
+    subtitle: "出关前的检查",
+    color: "teal",
+    steps: [
+      { index: 1, title: "武功等级检查", content: "确保核心武功已练好" },
+      { index: 2, title: "装备穿戴", content: "检查装备是否齐全" },
+      { index: 3, title: "物品准备", content: "药水、传送符等" },
+    ]
+  },
+  volume2: {
+    title: "卷二 · 打点圣地",
+    subtitle: "高效获取学点",
+    color: "indigo",
+    steps: [
+      { index: 1, title: "打点地图选择", content: "根据等级选择合适地点" },
+      { index: 2, title: "组队打点", content: "组队效率更高" },
+      { index: 3, title: "自动挂机设置", content: "游侠挂机参数配置" },
+    ]
+  },
+  volume3: {
+    title: "卷三 · 名声获取",
+    subtitle: "提升江湖地位",
+    color: "pink",
+    steps: [
+      { index: 1, title: "运镖任务", content: "稳定的名声来源" },
+      { index: 2, title: "帮派任务", content: "加入帮派后可接" },
+      { index: 3, title: "江湖历练", content: "参与各类活动" },
+    ]
+  },
+  volume4: {
+    title: "卷四 · 进阶之路",
+    subtitle: "后续发展方向",
+    color: "slate",
+    steps: [
+      { index: 1, title: "绝学获取", content: "学习门派绝学" },
+      { index: 2, title: "二转准备", content: "角色转生规划" },
+      { index: 3, title: "PVP竞技", content: "参与武林大会" },
+    ]
+  }
+};
+
+// 卷配置的颜色映射
+export const VOLUME_COLORS = {
+  amber: {
+    gradient: "from-amber-800 via-amber-700 to-amber-900",
+    border: "border-amber-900/50",
+    innerBorder: "border-amber-400/30",
+    bg: "bg-amber-900/50",
+    text: "text-amber-200",
+    subtext: "text-amber-300/80"
+  },
+  red: {
+    gradient: "from-red-900 via-red-800 to-red-950",
+    border: "border-red-950",
+    innerBorder: "border-red-400/30",
+    bg: "bg-red-950/50",
+    text: "text-red-200",
+    subtext: "text-red-300/80"
+  },
+  purple: {
+    gradient: "from-purple-900 via-indigo-900 to-purple-950",
+    border: "border-purple-950",
+    innerBorder: "border-purple-400/30",
+    bg: "bg-purple-950/50",
+    text: "text-purple-200",
+    subtext: "text-purple-300/80"
+  },
+  emerald: {
+    gradient: "from-emerald-900 via-teal-900 to-emerald-950",
+    border: "border-emerald-950",
+    innerBorder: "border-emerald-400/30",
+    bg: "bg-emerald-950/50",
+    text: "text-emerald-200",
+    subtext: "text-emerald-300/80"
+  },
+  blue: {
+    gradient: "from-blue-900 via-indigo-900 to-blue-950",
+    border: "border-blue-950",
+    innerBorder: "border-blue-400/30",
+    bg: "bg-blue-950/50",
+    text: "text-blue-200",
+    subtext: "text-blue-300/80"
+  },
+  cyan: {
+    gradient: "from-cyan-900 via-teal-900 to-cyan-950",
+    border: "border-cyan-950",
+    innerBorder: "border-cyan-400/30",
+    bg: "bg-cyan-950/50",
+    text: "text-cyan-200",
+    subtext: "text-cyan-300/80"
+  },
+  rose: {
+    gradient: "from-rose-900 via-pink-900 to-rose-950",
+    border: "border-rose-950",
+    innerBorder: "border-rose-400/30",
+    bg: "bg-rose-950/50",
+    text: "text-rose-200",
+    subtext: "text-rose-300/80"
+  },
+  violet: {
+    gradient: "from-violet-900 via-purple-900 to-violet-950",
+    border: "border-violet-950",
+    innerBorder: "border-violet-400/30",
+    bg: "bg-violet-950/50",
+    text: "text-violet-200",
+    subtext: "text-violet-300/80"
+  },
+  orange: {
+    gradient: "from-orange-900 via-amber-900 to-orange-950",
+    border: "border-orange-950",
+    innerBorder: "border-orange-400/30",
+    bg: "bg-orange-950/50",
+    text: "text-orange-200",
+    subtext: "text-orange-300/80"
+  },
+  teal: {
+    gradient: "from-teal-900 via-cyan-900 to-teal-950",
+    border: "border-teal-950",
+    innerBorder: "border-teal-400/30",
+    bg: "bg-teal-950/50",
+    text: "text-teal-200",
+    subtext: "text-teal-300/80"
+  },
+  indigo: {
+    gradient: "from-indigo-900 via-blue-900 to-indigo-950",
+    border: "border-indigo-950",
+    innerBorder: "border-indigo-400/30",
+    bg: "bg-indigo-950/50",
+    text: "text-indigo-200",
+    subtext: "text-indigo-300/80"
+  },
+  pink: {
+    gradient: "from-pink-900 via-rose-900 to-pink-950",
+    border: "border-pink-950",
+    innerBorder: "border-pink-400/30",
+    bg: "bg-pink-950/50",
+    text: "text-pink-200",
+    subtext: "text-pink-300/80"
+  },
+  slate: {
+    gradient: "from-slate-800 via-gray-900 to-slate-950",
+    border: "border-slate-950",
+    innerBorder: "border-slate-400/30",
+    bg: "bg-slate-950/50",
+    text: "text-slate-200",
+    subtext: "text-slate-300/80"
+  }
+};
