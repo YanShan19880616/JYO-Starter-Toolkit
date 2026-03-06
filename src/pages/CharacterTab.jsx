@@ -33,26 +33,36 @@ function CharacterTab({ onShowNovicePage }) {
       {/* 初出茅庐入口 */}
       <div
         onClick={onShowNovicePage}
-        className="mt-4 relative overflow-hidden rounded-xl shadow-md cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+        className="mt-4 relative overflow-hidden rounded-sm cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-600 via-orange-600 to-red-700"></div>
-        <div className="absolute inset-[2px] bg-[#f7f2e8] rounded-[10px] flex items-center p-3">
-          <div className="w-11 h-11 bg-gradient-to-br from-amber-600 to-red-800 rounded-full flex items-center justify-center text-white shadow-inner shrink-0 mr-3 border-2 border-amber-200">
-            <ManualIcon size={20} />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-[17px] font-black text-transparent bg-clip-text bg-gradient-to-r from-red-800 to-red-600 tracking-widest drop-shadow-sm font-serif">
-              初出茅庐
-            </h3>
-            <p className="text-[11px] font-bold text-amber-800 mt-0.5">
-              🔥 无脑跟着国柱走，基本属性全都有
-            </p>
-          </div>
-          <div className="text-red-700 shrink-0 opacity-80 animate-pulse bg-red-100 rounded-full p-1 ml-1 border border-red-200">
-            <ChevronRightIcon size={20} />
+        {/* 主背景 - 深血红色 */}
+        <div className="bg-[#7a1818] p-4 shadow-[3px_3px_0px_#450a0a]">
+          {/* 内层描边 - 古典画框效果 */}
+          <div className="absolute inset-1 border border-[#b88645] rounded-sm pointer-events-none"></div>
+
+          {/* 内容区域 */}
+          <div className="relative z-10 flex items-center">
+            {/* 左侧图标印章 */}
+            <div className="w-12 h-12 bg-[#b07124] border-2 border-[#d3a359] rounded-sm flex items-center justify-center shrink-0 mr-4 transform -rotate-6">
+              <ManualIcon size={20} className="text-white" />
+            </div>
+
+            {/* 文字区域 */}
+            <div className="flex-1">
+              <h3 className="text-2xl font-black text-white tracking-widest font-serif">
+                初出茅庐
+              </h3>
+              <p className="text-[12px] font-bold text-[#e89f3c] mt-0.5">
+                🔥 无脑跟着国柱走，基本属性全都有
+              </p>
+            </div>
+
+            {/* 右侧箭头指示器 */}
+            <div className="border border-[#b88645]/60 rounded-sm p-2 shrink-0 ml-2">
+              <ChevronRightIcon size={18} className="text-[#b88645]" />
+            </div>
           </div>
         </div>
-        <div className="p-3 w-11 h-11 box-content"></div>
       </div>
 
       {/* 子分类内容 */}

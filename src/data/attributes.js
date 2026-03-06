@@ -61,7 +61,7 @@ export const WUXING_STEPS = [
 // 江湖历练数据
 export const DAYS_DATA = [
   { id: 1, title: "第一日：初入江湖", teaser: "熟悉基础操作，分配初始属性点" },
-  { id: 2, title: "第二日：提高悟性", teaser: "加入心仪门派，初窥门径" },
+  { id: 2, title: "第二日：妙悟入神", teaser: "悟性冲击86-90，实现消点最优解" },
   { id: 3, title: "第三日：肝脑涂地", teaser: "闭关挂机，基内搏击闪躲冲140" },
   { id: 4, title: "第四日：脱胎换骨", teaser: "狂吃丹药，属性冲刺极限" },
   { id: 5, title: "第五日：名扬天下", teaser: "武功大成，出关实战打点" },
@@ -131,33 +131,45 @@ export const VOLUME4_STEPS = [
 // ==================== 第二日：拜师学艺 ====================
 export const DAY2_VOLUMES = {
   volume1: {
-    title: "卷一 · 门派抉择",
-    subtitle: "各大门派特色一览",
-    color: "blue",
+    title: "卷一 · X2操作",
+    subtitle: "瞬间飞行",
+    color: "amber",
     steps: [
-      { index: 1, title: "门派总览（少林、武当、峨眉等）", content: "各门派武学特色与定位介绍" },
-      { index: 2, title: "门派入门条件", content: "属性要求、性别限制等" },
-      { index: 3, title: "门派武学路线", content: "各门派核心武功与发展方向" },
+      { index: 1, title: "X2登录", imageSrc: "images/X2相关1登录.png" },
+      { index: 2, title: "飞行到扬州镖局", imageSrc: "images/X2相关2飞行.png" },
     ]
   },
   volume2: {
-    title: "卷二 · 正式拜师",
-    subtitle: "完成入门仪式",
+    title: "卷二 · 读书识字",
+    subtitle: "读书识字增加基础悟性",
     color: "purple",
     steps: [
-      { index: 1, title: "前往门派驻地", content: "使用驿站或跑图到达" },
-      { index: 2, title: "拜见掌门", content: "与掌门对话完成拜师" },
-      { index: 3, title: "入门考验", content: "部分门派需要完成考验任务" },
+      { index: 1, title: "扬州镖局出门右侧找到落第秀才", imageSrc: "images/读书识字1落第秀才.png" },
+      { index: 2, title: "背包打开找到特级神佑丹右键使用", imageSrc: "images/读书识字2右键使用神佑丹.png" },
+      { index: 3, title: "右键读书识字，输入人物身上的实际学点值，点击确定", imageSrc: "images/读书识字3神佑丹消点.png" },
+      { index: 4, title: "等待大约25秒左右，人物身上的学点全部到了读书识字，读书识字等级提升，同时学点也清0了", imageSrc: "images/读书识字4神佑丹消点到0.png" },
+      { index: 5, title: "背包打开找到记忆天书(满)，右键使用取出新的65200学点", imageSrc: "images/读书识字5背包找到记忆天书(满).png" },
+      { index: 6, title: "重复『第肆式』和『第伍式』直到读书识字100级，人物读书识字毕业", imageSrc: "images/读书识字6持续消点至100级.png" },
     ]
   },
   volume3: {
-    title: "卷三 · 初窥门径",
-    subtitle: "学习门派基础武功",
+    title: "卷三 · 丹药补悟性",
+    subtitle: "服用丹药增加悟性",
     color: "emerald",
     steps: [
       { index: 1, title: "查看门派武功列表", content: "了解可学习的武功" },
       { index: 2, title: "学习入门武功", content: "优先学习核心攻击技能" },
       { index: 3, title: "武功升级", content: "使用学点提升武功等级" },
+    ]
+  },
+  volume4: {
+    title: "卷四 · 悟性套装",
+    subtitle: "装备继续提升悟性",
+    color: "red",
+    steps: [
+      { index: 1, title: "套装获取途径", content: "了解悟性套装的获取方式" },
+      { index: 2, title: "套装属性加成", content: "集齐套装后的属性提升" },
+      { index: 3, title: "装备搭配建议", content: "如何最大化套装效果" },
     ]
   }
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeftIcon, LockIcon } from '../components/icons';
-import { DAYS_DATA, DAY2_VOLUMES, DAY3_VOLUMES, DAY4_VOLUMES, DAY5_VOLUMES } from '../data/attributes';
+import { DAYS_DATA, DAY2_VOLUMES } from '../data/attributes';
 import Volume1 from '../components/Volume1';
 import Volume2 from '../components/Volume2';
 import Volume3 from '../components/Volume3';
@@ -70,8 +70,18 @@ function NoviceSection({ onBack }) {
                    <LockIcon size={14} />}
                 </div>
 
-                <div 
-                  onClick={() => { if (isCompleted || isCurrent) setViewingDay(day.id); }}
+                <div
+                  onClick={() => {
+                    if (isCompleted || isCurrent) {
+                      // 切换展开/收起
+                      if (viewingDay === day.id) {
+                        setViewingDay(null);
+                      } else {
+                        setViewingDay(day.id);
+                        setExpandedCategory(null); // 展开新天数时，重置所有卷为关闭状态
+                      }
+                    }
+                  }}
                   className={`rounded-sm p-4 transition-all duration-300 border-2 ${
                     isCompleted ? 'bg-[#fffdf8] border-[#c2aa80] shadow-[2px_2px_0px_#c2aa80] cursor-pointer' :
                     isCurrent ? 'bg-[#fffdf8] border-red-900 shadow-[3px_3px_0px_#7f1d1d] transform scale-[1.01] origin-left cursor-pointer' :
@@ -99,7 +109,6 @@ function NoviceSection({ onBack }) {
                 {isViewing && (
                   <div className="mt-4 pt-4 border-t-2 border-dashed border-[#d4be9a] animate-in fade-in duration-500">
                     
-                    {/* 第一日 */}
                     {day.id === 1 && (
                       <div className="space-y-4">
                         <Volume1 
@@ -121,40 +130,12 @@ function NoviceSection({ onBack }) {
                       </div>
                     )}
 
-                    {/* 第二日：拜师学艺 */}
-                    {day.id === 2 && (
-                      <DayContent
-                        volumes={Object.values(DAY2_VOLUMES)}
-                        expandedCategory={expandedCategory}
-                        onToggle={toggleCategory}
-                      />
-                    )}
-
-                    {/* 第三日：肝脑涂地 */}
-                    {day.id === 3 && (
-                      <DayContent
-                        volumes={Object.values(DAY3_VOLUMES)}
-                        expandedCategory={expandedCategory}
-                        onToggle={toggleCategory}
-                      />
-                    )}
-
-                    {/* 第四日：脱胎换骨 */}
-                    {day.id === 4 && (
-                      <DayContent
-                        volumes={Object.values(DAY4_VOLUMES)}
-                        expandedCategory={expandedCategory}
-                        onToggle={toggleCategory}
-                      />
-                    )}
-
-                    {/* 第五日：名扬天下 */}
-                    {day.id === 5 && (
-                      <DayContent
-                        volumes={Object.values(DAY5_VOLUMES)}
-                        expandedCategory={expandedCategory}
-                        onToggle={toggleCategory}
-                      />
+                    {day.id !== 1 && (
+                       <DayContent
+                         volumes={day.id === 2 ? Object.values(DAY2_VOLUMES) : []}
+                         expandedCategory={expandedCategory}
+                         onToggle={toggleCategory}
+                       />
                     )}
 
                     {isCurrent && (
@@ -168,7 +149,7 @@ function NoviceSection({ onBack }) {
                             alert("恭喜大侠，神功大成，可出关矣！");
                           }
                         }}
-                        className="w-full mt-5 py-3 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiPjwvcmVjdD4KPHBhdGggZD0iTTAgMEw4IDhaTThgMExgOFoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIj48L3BhdGg+Cjwvc3ZnPg==')] bg-red-900 text-[#f7f2e8] font-bold text-[15px] font-serif tracking-widest rounded-sm border-2 border-red-950 shadow-[2px_2px_0px_#450a0a] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#450a0a] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center"
+                        className="w-full mt-3 py-2.5 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiPjwvcmVjdD4KPHBhdGggZD0iTTAgMEw4IDhaTThgMExgOFoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIj48L3BhdGg+Cjwvc3ZnPg==')] bg-red-900 text-[#f7f2e8] font-bold text-[15px] font-serif tracking-widest rounded-sm border-2 border-red-950 shadow-[2px_2px_0px_#450a0a] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#450a0a] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center"
                       >
                         {unlockedDay < DAYS_DATA.length ? "参透此卷，修炼下一日" : "神功大成，破关而出！"}
                       </button>

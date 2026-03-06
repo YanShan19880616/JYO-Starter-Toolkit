@@ -32,7 +32,7 @@ function WuxiaStep({ index, title, imageSrc }) {
   }, []);
 
   return (
-    <div className="mb-5 relative pl-5 border-l-2 border-amber-700/30 ml-2">
+    <div className="relative pl-5 border-l-2 border-amber-700/30 ml-2">
       {/* 左侧的菱形连接点 */}
       <div className="absolute -left-[5px] top-1 w-2 h-2 rotate-45 bg-amber-600 border border-amber-900 shadow-sm"></div>
       

@@ -7,7 +7,10 @@ function Volume1({ isExpanded, onToggle }) {
   return (
     <div>
       <button
-        onClick={onToggle}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle();
+        }}
         className="w-full relative overflow-hidden rounded-sm shadow-sm cursor-pointer transition-all duration-300 group border border-amber-900/50"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-amber-800 via-amber-700 to-amber-900"></div>
@@ -31,7 +34,7 @@ function Volume1({ isExpanded, onToggle }) {
       </button>
       
       {isExpanded && (
-        <div className="mt-4 px-2 py-1 animate-in fade-in duration-300">
+        <div className="mt-4 px-2 pb-2 space-y-6 animate-in fade-in duration-300">
           {VOLUME1_STEPS.map((step) => (
             <WuxiaStep key={step.index} index={step.index} title={step.title} imageSrc={step.imageSrc} />
           ))}

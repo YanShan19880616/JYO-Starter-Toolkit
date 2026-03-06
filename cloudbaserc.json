@@ -1,0 +1,5 @@
+{
+  "envId": "your-env-id",
+  "region": "ap-guangzhou",
+  "functionRoot": "cloudbase"
+}

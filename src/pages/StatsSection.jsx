@@ -70,7 +70,7 @@ function StatsSection() {
             </div>
             <div>
               <p className="text-xs text-amber-900 leading-relaxed font-bold">
-                新人上手，最应该堆哪个属性点：<br/>
+                什么？大侠你的悟性还没100？<br/>
                 <span className="text-[15px] font-black text-red-700 tracking-widest inline-block mt-1 font-serif drop-shadow-sm">悟性！悟性！悟性！</span>
               </p>
               {!isWuxingExpanded && (
@@ -92,12 +92,12 @@ function StatsSection() {
           </div>
         )}
       </div>
-      
-      {/* 人物根骨剖析 */}
+
+      {/* 人物属性剖析 */}
       <div>
         <div className="flex items-center mb-3">
           <div className="w-1.5 h-4 bg-red-900 rounded-sm mr-2"></div>
-          <h3 className="text-lg font-bold text-amber-950 font-serif">人物根骨剖析</h3>
+          <h3 className="text-lg font-bold text-amber-950 font-serif">人物属性剖析</h3>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {ATTRIBUTES_DATA.panel4.map((attr, idx) => (

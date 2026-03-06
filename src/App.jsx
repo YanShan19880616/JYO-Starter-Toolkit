@@ -11,7 +11,13 @@ function App() {
 
   // 如果显示新手页面，直接返回NoviceSection
   if (showNovicePage) {
-    return <NoviceSection onBack={() => setShowNovicePage(false)} />;
+    return (
+      <div className="flex justify-center bg-gray-900 min-h-screen font-sans">
+        <div className="w-full max-w-md bg-[#f7f2e8] min-h-screen relative flex flex-col shadow-2xl overflow-hidden text-gray-800">
+          <NoviceSection onBack={() => setShowNovicePage(false)} />
+        </div>
+      </div>
+    );
   }
 
   return (
